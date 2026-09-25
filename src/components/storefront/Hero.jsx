@@ -4,8 +4,7 @@ import { ArrowRight, Shield, Truck, Headset } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useTranslation } from "react-i18next";
 
-const HERO_IMG =
-  "https://media.base44.com/images/public/6ab3f026d18be16d102bfefd/7895ebdee_generated_image.png";
+const HERO_IMG = "/hero-car.png";
 
 const FEATURES = [
   { icon: Shield, labelKey: "Premium Quality" },

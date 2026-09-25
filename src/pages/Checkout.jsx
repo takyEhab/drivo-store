@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Lock, Truck } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useCart } from "@/lib/cart-context";
 import { formatEGP } from "@/lib/format";
 import { useTranslation } from "react-i18next";
@@ -32,7 +32,7 @@ export default function Checkout() {
   const [shippingRatesLoaded, setShippingRatesLoaded] = useState(false);
 
   useEffect(() => {
-    base44.entities.ShippingRate.list("governorate", 100)
+    api.entities.ShippingRate.list("governorate", 100)
       .then((data) => {
         setShippingRates(data || []);
       })
@@ -87,7 +87,7 @@ export default function Checkout() {
     setCoupon(null);
     if (!form.coupon_code.trim()) return;
     try {
-      const res = await base44.entities.Coupon.filter({ code: form.coupon_code.trim(), active: true }, "-created_date", 1);
+      const res = await api.entities.Coupon.filter({ code: form.coupon_code.trim(), active: true }, "-created_date", 1);
       const c = res[0];
       if (!c) { setCouponError("Invalid coupon code"); return; }
       if (c.expires_at && new Date(c.expires_at) < new Date()) { setCouponError("Coupon expired"); return; }
@@ -107,7 +107,7 @@ export default function Checkout() {
     setPlacing(true);
     try {
       const orderNumber = `DRV-${Date.now().toString().slice(-6)}`;
-      const order = await base44.entities.Order.create({
+      const order = await api.entities.Order.create({
         order_number: orderNumber,
         status: "Pending",
         customer_name: form.customer_name,
@@ -134,7 +134,7 @@ export default function Checkout() {
         })),
       });
       if (coupon) {
-        await base44.entities.Coupon.update(coupon.id, { used_count: (coupon.used_count || 0) + 1 });
+        await api.entities.Coupon.update(coupon.id, { used_count: (coupon.used_count || 0) + 1 });
       }
 
       // Save order to device recent orders for easy tracking

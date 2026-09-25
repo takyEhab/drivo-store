@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import Navbar from "@/components/storefront/Navbar";
 import Footer from "@/components/storefront/Footer";
 import CartDrawer from "@/components/storefront/CartDrawer";
@@ -18,7 +18,7 @@ export default function Layout() {
 
   useEffect(() => {
     let active = true;
-    base44.entities.Category.list("sort_order", 50)
+    api.entities.Category.list("sort_order", 50)
       .then((res) => {
         if (active) setCategories(res);
       })

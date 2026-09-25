@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,7 +61,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const result = await base44.auth.register({
+      const result = await api.auth.register({
         email,
         password,
         redirectTo: returnTo,
@@ -87,7 +87,7 @@ export default function Register() {
     setError("");
     setResendLoading(true);
     try {
-      await base44.auth.resendOtp(email, returnTo);
+      await api.auth.resendOtp(email, returnTo);
       setResendCooldown(60);
       toast({
         title: "Verification link sent",
@@ -104,7 +104,7 @@ export default function Register() {
     setError("");
     setGoogleLoading(true);
     try {
-      await base44.auth.loginWithProvider("google", returnTo);
+      await api.auth.loginWithProvider("google", returnTo);
     } catch (err) {
       setError(err.message || "Failed to initiate Google sign in");
       setGoogleLoading(false);

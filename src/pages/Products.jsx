@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useOutletContext } from "react-router-dom";
 import { SlidersHorizontal, X } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import ProductCard from "@/components/storefront/ProductCard";
 import SEO from "@/components/SEO";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,7 @@ export default function Products() {
 
   useEffect(() => {
     setLoading(true);
-    base44.entities.Product.list("-created_date", 200)
+    api.entities.Product.list("-created_date", 200)
       .then((res) => setAllProducts(res))
       .catch(() => {})
       .finally(() => setLoading(false));

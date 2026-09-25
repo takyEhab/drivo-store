@@ -11,7 +11,7 @@ import {
   ArrowRight,
   Trash2,
 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatEGP, classNames } from "@/lib/format";
 
 const STATUSES = [
@@ -111,7 +111,7 @@ export default function TrackOrder() {
     setOrder(null);
     setOrdersList([]);
     try {
-      const res = await base44.entities.Order.filter(
+      const res = await api.entities.Order.filter(
         {
           order_number: ordNum.trim(),
           phone: ph.trim(),
@@ -154,7 +154,7 @@ export default function TrackOrder() {
       }
       setLoading(true);
       try {
-        const res = await base44.entities.Order.filter(
+        const res = await api.entities.Order.filter(
           {
             phone: phone.trim(),
             email: email.trim().toLowerCase(),

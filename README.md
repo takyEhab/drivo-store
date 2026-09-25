@@ -24,7 +24,7 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
 
 ### 3. Database & Seed Data Setup
 1. In your Supabase dashboard, open the **SQL Editor**.
-2. Open [`supabase/schema.sql`](file:///e:/MyProjects/drivo_base44/supabase/schema.sql).
+2. Open [`supabase/schema.sql`](file:///e:/MyProjects/drivo-store/supabase/schema.sql).
 3. Copy and paste the entire script into the SQL editor and click **Run**.
    - This creates all 8 tables (`categories`, `products`, `shipping_rates`, `coupons`, `orders`, `reviews`, `product_events`, `profiles`).
    - Configures Row Level Security (RLS) policies.
@@ -47,7 +47,7 @@ drivo-store/
 ├── src/
 │   ├── api/
 │   │   ├── entities.js      # Supabase data adapter (CRUD for products, orders, etc.)
-│   │   └── base44Client.js  # Backwards-compatible export adapter
+│   │   └── apiClient.js     # Unified API client (entities, auth, functions)
 │   ├── components/
 │   │   ├── admin/           # MetricsCards, OrdersManager, InventoryManager, ProductEditDialog
 │   │   ├── storefront/      # Navbar, Hero, ProductCard, CartDrawer, Footer, WhatsAppButton

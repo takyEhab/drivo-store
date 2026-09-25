@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useReducer,
 } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "drivo_cart_v1";
@@ -104,7 +104,7 @@ export function CartProvider({ children }) {
       subtotal,
       add: (product, quantity, variant) => {
         dispatch({ type: "ADD", product, quantity, variant });
-        base44.functions
+        api.functions
           .invoke("LogProductEvent", {
             type: "add_to_cart",
             product_id: product.id,

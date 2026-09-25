@@ -1,10 +1,10 @@
 import { entities, auth, functions } from "./entities";
 
-export const base44 = {
+export const api = {
   entities,
   auth,
   functions,
 };
 
 export { entities, auth, functions };
-export default base44;
+export default api;

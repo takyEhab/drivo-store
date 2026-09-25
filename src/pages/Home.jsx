@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Image } from "@/components/ui/image";
 import Hero from "@/components/storefront/Hero";
@@ -16,7 +16,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Product.list("-created_date", 100)
+    api.entities.Product.list("-created_date", 100)
       .then((res) => setProducts(res))
       .catch(() => {})
       .finally(() => setLoading(false));

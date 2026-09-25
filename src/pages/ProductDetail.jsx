@@ -8,7 +8,7 @@ import {
   ChevronRight,
   Star,
 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useCart } from "@/lib/cart-context";
 import { formatEGP, discountPercent, classNames } from "@/lib/format";
 import ProductCard from "@/components/storefront/ProductCard";
@@ -39,7 +39,7 @@ export default function ProductDetail() {
     setQty(1);
     setSelectedVariant(null);
     setAdded(false);
-    base44.entities.Product.filter({ slug }, "-created_date", 1)
+    api.entities.Product.filter({ slug }, "-created_date", 1)
       .then(async (res) => {
         if (!active) return;
         const p = res[0];
@@ -58,7 +58,7 @@ export default function ProductDetail() {
         } catch (e) {}
         // related
         if (p.category_id) {
-          const rel = await base44.entities.Product.filter(
+          const rel = await api.entities.Product.filter(
             { category_id: p.category_id },
             "-created_date",
             5,
@@ -66,7 +66,7 @@ export default function ProductDetail() {
           if (active) setRelated(rel.filter((r) => r.id !== p.id).slice(0, 4));
         }
         // reviews
-        const revs = await base44.entities.Review.filter(
+        const revs = await api.entities.Review.filter(
           { product_id: p.id, status: "approved" },
           "-created_date",
           50,

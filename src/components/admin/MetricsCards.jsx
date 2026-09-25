@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatEGP } from "@/lib/format";
 import {
   ShoppingCart,
@@ -25,9 +25,9 @@ export default function MetricsCards() {
   useEffect(() => {
     let active = true;
     Promise.all([
-      base44.entities.Order.list("-created_date", 500).catch(() => []),
-      base44.entities.Product.list("-created_date", 500).catch(() => []),
-      base44.entities.ProductEvent.filter(
+      api.entities.Order.list("-created_date", 500).catch(() => []),
+      api.entities.Product.list("-created_date", 500).catch(() => []),
+      api.entities.ProductEvent.filter(
         { type: "add_to_cart" },
         "-created_date",
         500,

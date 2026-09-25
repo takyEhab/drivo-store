@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatEGP } from "@/lib/format";
 import {
   Table,
@@ -46,7 +46,7 @@ export default function InventoryManager() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Product.list("-created_date", 500)
+    api.entities.Product.list("-created_date", 500)
       .then(setProducts)
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -58,7 +58,7 @@ export default function InventoryManager() {
       list.map((x) => (x.id === p.id ? { ...x, availability } : x)),
     );
     try {
-      await base44.entities.Product.update(p.id, { availability });
+      await api.entities.Product.update(p.id, { availability });
     } catch {
       load();
     }
@@ -67,7 +67,7 @@ export default function InventoryManager() {
   const remove = async (p) => {
     if (!window.confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
     try {
-      await base44.entities.Product.delete(p.id);
+      await api.entities.Product.delete(p.id);
       setProducts((list) => list.filter((x) => x.id !== p.id));
     } catch {
       alert("Could not delete product.");

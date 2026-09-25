@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
 /**
- * Universal entity adapter for Supabase that mimics Base44 entity methods:
+ * Universal entity adapter for Supabase:
  * .list(sort, limit)
  * .filter(query, sort, limit)
  * .create(data)

@@ -7,7 +7,6 @@ const isClearAccessTokenRequested = () =>
 
 const clearStoredAccessToken = () => {
   if (!isNode) {
-    window.localStorage.removeItem("base44_access_token");
     window.localStorage.removeItem("token");
   }
 };
@@ -17,10 +16,10 @@ const getAppParams = () => {
     clearStoredAccessToken();
   }
   return {
-    appId: import.meta.env.VITE_BASE44_APP_ID || "",
+    appId: import.meta.env.VITE_APP_ID || "",
     token: !isNode ? window.localStorage.getItem("token") : null,
-    functionsVersion: import.meta.env.VITE_BASE44_FUNCTIONS_VERSION || "",
-    appBaseUrl: import.meta.env.VITE_BASE44_APP_BASE_URL || "",
+    functionsVersion: import.meta.env.VITE_FUNCTIONS_VERSION || "",
+    appBaseUrl: import.meta.env.VITE_APP_BASE_URL || "",
   };
 };
 

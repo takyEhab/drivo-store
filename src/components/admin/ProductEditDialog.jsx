@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { supabase } from "@/lib/supabase";
 import {
   Dialog,
@@ -146,7 +146,7 @@ export default function ProductEditDialog({ product, onSaved, onClose }) {
   }, [product]);
 
   useEffect(() => {
-    base44.entities.Category.list("name", 100)
+    api.entities.Category.list("name", 100)
       .then(setCategories)
       .catch(() => {});
   }, []);
@@ -267,7 +267,7 @@ export default function ProductEditDialog({ product, onSaved, onClose }) {
           variants: [],
           tags: [],
         };
-        const created = await base44.entities.Product.create(payload);
+        const created = await api.entities.Product.create(payload);
         onSaved(created);
       } else {
         const payload = {
@@ -286,7 +286,7 @@ export default function ProductEditDialog({ product, onSaved, onClose }) {
           new_arrival: !!form.new_arrival,
           images: Array.isArray(form.images) ? form.images : [],
         };
-        const updated = await base44.entities.Product.update(product.id, payload);
+        const updated = await api.entities.Product.update(product.id, payload);
         onSaved(updated);
       }
     } catch (e) {

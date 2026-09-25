@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatEGP, classNames } from "@/lib/format";
 import {
   Table,
@@ -77,7 +77,7 @@ export default function ShippingRatesManager() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.ShippingRate.list("governorate", 100)
+    api.entities.ShippingRate.list("governorate", 100)
       .then((data) => {
         setRates(data || []);
       })
@@ -115,7 +115,7 @@ export default function ShippingRatesManager() {
 
     setSavingId(rate.id);
     try {
-      const updated = await base44.entities.ShippingRate.update(rate.id, {
+      const updated = await api.entities.ShippingRate.update(rate.id, {
         fee: feeNum,
       });
 
@@ -144,7 +144,7 @@ export default function ShippingRatesManager() {
       if (shouldEnable) {
         // Enable delivery: create row in shipping_rates
         const defaultFee = GOVERNORATE_DEFAULTS[govName] || 50;
-        const created = await base44.entities.ShippingRate.create({
+        const created = await api.entities.ShippingRate.create({
           governorate: govName,
           fee: defaultFee,
         });
@@ -159,7 +159,7 @@ export default function ShippingRatesManager() {
       } else {
         // Disable delivery: delete from shipping_rates so it is hidden from checkout
         if (existingRate?.id) {
-          await base44.entities.ShippingRate.delete(existingRate.id);
+          await api.entities.ShippingRate.delete(existingRate.id);
         }
         setRates((prev) => prev.filter((r) => r.governorate !== govName));
         toast({

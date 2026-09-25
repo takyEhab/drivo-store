@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatEGP } from "@/lib/format";
 import {
   Table,
@@ -50,7 +50,7 @@ export default function OrdersManager() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Order.list("-created_date", 200)
+    api.entities.Order.list("-created_date", 200)
       .then(setOrders)
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -60,7 +60,7 @@ export default function OrdersManager() {
   const updateStatus = async (id, status) => {
     setOrders((list) => list.map((o) => (o.id === id ? { ...o, status } : o)));
     try {
-      await base44.entities.Order.update(id, { status });
+      await api.entities.Order.update(id, { status });
     } catch (e) {
       load();
     }
