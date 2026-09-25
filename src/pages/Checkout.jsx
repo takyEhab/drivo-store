@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Truck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useCart } from "@/lib/cart-context";
 import { formatEGP } from "@/lib/format";
@@ -27,11 +27,45 @@ export default function Checkout() {
   const [placing, setPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
+  const [shippingRatesLoaded, setShippingRatesLoaded] = useState(false);
+
   useEffect(() => {
-    base44.entities.ShippingRate.list("governorate", 50)
-      .then(setShippingRates)
-      .catch(() => {});
+    base44.entities.ShippingRate.list("governorate", 100)
+      .then((data) => {
+        setShippingRates(data || []);
+      })
+      .catch(() => {})
+      .finally(() => setShippingRatesLoaded(true));
   }, []);
+
+  const rateMap = useMemo(() => {
+    const map = {};
+    shippingRates.forEach((r) => {
+      if (r.fee !== null && r.fee >= 0) {
+        map[r.governorate] = r.fee;
+      }
+    });
+    return map;
+  }, [shippingRates]);
+
+  const availableGovernorates = useMemo(() => {
+    if (shippingRatesLoaded) {
+      return shippingRates
+        .filter((r) => r.fee !== null && r.fee >= 0)
+        .map((r) => r.governorate)
+        .sort((a, b) => a.localeCompare(b));
+    }
+    return EGYPT_GOVERNORATES;
+  }, [shippingRates, shippingRatesLoaded]);
+
+  // If currently selected governorate is disabled, reset selection
+  useEffect(() => {
+    if (shippingRatesLoaded && form.governorate) {
+      if (!availableGovernorates.includes(form.governorate)) {
+        setForm((f) => ({ ...f, governorate: "" }));
+      }
+    }
+  }, [availableGovernorates, form.governorate, shippingRatesLoaded]);
 
   const shippingFee = useMemo(() => {
     const rate = shippingRates.find((r) => r.governorate === form.governorate);
@@ -195,10 +229,27 @@ export default function Checkout() {
           </div>
 
           <div className="border border-border p-5 md:p-6 bg-card">
-            <h2 className="font-heading text-lg font-bold mb-4">Shipping Address</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-heading text-lg font-bold">Shipping Address</h2>
+              {form.governorate && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-accent/10 text-accent font-heading font-semibold text-xs border border-accent/20">
+                  <Truck className="w-3.5 h-3.5" />
+                  Delivery: {formatEGP(shippingFee)}
+                </span>
+              )}
+            </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">Governorate *</label>
+                <div className="flex items-center justify-between">
+                  <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">
+                    Governorate *
+                  </label>
+                  {form.governorate && (
+                    <span className="font-mono-num text-xs font-bold text-accent">
+                      + {formatEGP(shippingFee)} delivery
+                    </span>
+                  )}
+                </div>
                 <select
                   value={form.governorate}
                   onChange={(e) => set("governorate", e.target.value)}
@@ -206,10 +257,34 @@ export default function Checkout() {
                   className="mt-1.5 w-full h-11 px-3 bg-background border border-border text-sm focus:outline-none focus:border-foreground"
                 >
                   <option value="">Select governorate</option>
-                  {EGYPT_GOVERNORATES.map((g) => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
+                  {availableGovernorates.map((g) => {
+                    const fee = rateMap[g];
+                    return (
+                      <option key={g} value={g}>
+                        {g} {fee !== undefined ? `— ${formatEGP(fee)}` : ""}
+                      </option>
+                    );
+                  })}
                 </select>
+
+                {form.governorate ? (
+                  <div className="mt-2.5 p-3 rounded-lg bg-accent/10 border border-accent/25 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-4 h-4 text-accent shrink-0" />
+                      <span>
+                        Delivery fee to <strong className="text-foreground">{form.governorate}</strong>:
+                      </span>
+                    </div>
+                    <span className="font-mono-num font-bold text-accent text-sm">
+                      {formatEGP(shippingFee)}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <span>Select your governorate to view exact delivery fees (from 50 EGP)</span>
+                  </p>
+                )}
               </div>
               <Field label="City / Area *" value={form.city} onChange={(v) => set("city", v)} required />
               <Field label="Building / Floor / Apt" value={form.building} onChange={(v) => set("building", v)} />

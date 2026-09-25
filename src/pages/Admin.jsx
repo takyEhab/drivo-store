@@ -9,11 +9,13 @@ import {
   Lock,
   ArrowLeft,
   LogOut,
+  Truck,
 } from "lucide-react";
 import Logo from "@/components/storefront/Logo";
 import MetricsCards from "@/components/admin/MetricsCards";
 import OrdersManager from "@/components/admin/OrdersManager";
 import InventoryManager from "@/components/admin/InventoryManager";
+import ShippingRatesManager from "@/components/admin/ShippingRatesManager";
 
 export default function Admin() {
   const { user, logout } = useAuth();
@@ -86,6 +88,9 @@ export default function Admin() {
             <TabsTrigger value="inventory" className="px-4">
               <Package className="w-4 h-4 mr-2" /> Inventory
             </TabsTrigger>
+            <TabsTrigger value="shipping" className="px-4">
+              <Truck className="w-4 h-4 mr-2" /> Shipping Rates
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="mt-6">
             <MetricsCards />
@@ -95,6 +100,9 @@ export default function Admin() {
           </TabsContent>
           <TabsContent value="inventory" className="mt-6">
             <InventoryManager />
+          </TabsContent>
+          <TabsContent value="shipping" className="mt-6">
+            <ShippingRatesManager />
           </TabsContent>
         </Tabs>
       </div>
