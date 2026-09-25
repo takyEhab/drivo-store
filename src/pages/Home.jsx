@@ -6,9 +6,12 @@ import ProductCard from "@/components/storefront/ProductCard";
 import { Image } from "@/components/ui/image";
 import Hero from "@/components/storefront/Hero";
 import SEO from "@/components/SEO";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const { categories } = useOutletContext();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language?.startsWith("ar");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,10 +44,10 @@ export default function Home() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                01 / Categories
+                {t("01 / Categories")}
               </p>
               <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">
-                Browse by Category
+                {t("Browse by Category")}
               </h2>
             </div>
           </div>
@@ -66,10 +69,10 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-4">
                   <h3 className="font-heading text-lg font-bold text-background">
-                    {c.name}
+                    {i18n.language.startsWith('ar') ? (c.name_ar || t(c.name)) : c.name}
                   </h3>
                   <span className="font-mono-num text-[11px] text-accent flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Shop now <ArrowRight className="w-3 h-3" />
+                    {t("Shop now")} <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
               </Link>
@@ -84,17 +87,17 @@ export default function Home() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                02 / Featured
+                {t("02 / Featured")}
               </p>
               <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">
-                Featured Upgrades
+                {t("Featured Upgrades")}
               </h2>
             </div>
             <Link
               to="/products"
               className="hidden sm:flex items-center gap-1 text-sm font-medium hover:text-accent"
             >
-              View all <ArrowRight className="w-4 h-4" />
+              {t("View all")} <ArrowRight className={`w-4 h-4 transition-transform ${isAr ? "rotate-180" : ""}`} />
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -111,10 +114,10 @@ export default function Home() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                03 / Trending
+                {t("03 / Trending")}
               </p>
               <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">
-                Best Sellers
+                {t("Best Sellers")}
               </h2>
             </div>
           </div>
@@ -133,13 +136,13 @@ export default function Home() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-accent mb-2">
-                  04 / Budget
+                  {t("04 / Budget")}
                 </p>
                 <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">
-                  Under 100 EGP
+                  {t("Under 100 EGP")}
                 </h2>
                 <p className="text-foreground/60 text-sm mt-2">
-                  Small upgrades, big difference.
+                  {t("Small upgrades, big difference.")}
                 </p>
               </div>
             </div>
@@ -158,17 +161,17 @@ export default function Home() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                05 / Fresh
+                {t("05 / Fresh")}
               </p>
               <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">
-                New Arrivals
+                {t("New Arrivals")}
               </h2>
             </div>
             <Link
               to="/products"
               className="hidden sm:flex items-center gap-1 text-sm font-medium hover:text-accent"
             >
-              View all <ArrowRight className="w-4 h-4" />
+              {t("View all")} <ArrowRight className={`w-4 h-4 transition-transform ${isAr ? "rotate-180" : ""}`} />
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -189,16 +192,16 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="bg-muted border border-border p-10 md:p-16 text-center">
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tighter">
-            Ready to style your ride?
+            {t("Ready to style your ride?")}
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
-            Cash on Delivery across Egypt. Track your order in real time.
+            {t("Cash on Delivery across Egypt. Track your order in real time.")}
           </p>
           <Link
             to="/products"
             className="inline-flex mt-8 px-8 py-4 bg-foreground text-background font-heading font-bold hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            Start Shopping
+            {t("Start Shopping")}
           </Link>
         </div>
       </section>

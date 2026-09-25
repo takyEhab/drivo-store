@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import Navbar from "@/components/storefront/Navbar";
 import Footer from "@/components/storefront/Footer";
@@ -8,6 +9,12 @@ import WhatsAppButton from "@/components/storefront/WhatsAppButton";
 
 export default function Layout() {
   const [categories, setCategories] = useState([]);
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.dir = i18n.dir();
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
   useEffect(() => {
     let active = true;

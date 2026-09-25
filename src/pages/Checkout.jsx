@@ -4,6 +4,7 @@ import { Check, Lock, Truck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useCart } from "@/lib/cart-context";
 import { formatEGP } from "@/lib/format";
+import { useTranslation } from "react-i18next";
 
 const EGYPT_GOVERNORATES = [
   "Cairo", "Giza", "Alexandria", "Dakahlia", "Red Sea", "Beheira", "Fayoum",
@@ -14,6 +15,7 @@ const EGYPT_GOVERNORATES = [
 ];
 
 export default function Checkout() {
+  const { t } = useTranslation();
   const { items, subtotal, clear } = useCart();
   const navigate = useNavigate();
   const [shippingRates, setShippingRates] = useState([]);
@@ -174,14 +176,14 @@ export default function Checkout() {
         <div className="w-16 h-16 mx-auto rounded-full bg-accent flex items-center justify-center mb-6">
           <Check className="w-8 h-8 text-accent-foreground" />
         </div>
-        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">Order Confirmed!</h1>
-        <p className="text-muted-foreground mt-3">Thank you, {placedOrder.customer_name}. We'll call you shortly to confirm.</p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter">{t("Order Confirmed!")}</h1>
+        <p className="text-muted-foreground mt-3">{t("Thank you")}, {placedOrder.customer_name}. {t("We'll call you shortly to confirm.")}</p>
         <div className="mt-8 border border-border bg-card p-6 inline-block">
-          <p className="font-mono-num text-xs uppercase tracking-wider text-muted-foreground">Your Order Number</p>
+          <p className="font-mono-num text-xs uppercase tracking-wider text-muted-foreground">{t("Your Order Number")}</p>
           <p className="font-mono-num text-2xl font-bold mt-1">{placedOrder.order_number}</p>
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Saved to this device — you won't lose it if you forget the number.
+          {t("Saved to this device — you won't lose it if you forget the number.")}
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <button
@@ -192,10 +194,10 @@ export default function Checkout() {
             }
             className="px-6 py-3 bg-foreground text-background font-heading font-bold hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            Track This Order
+            {t("Track This Order")}
           </button>
           <button onClick={() => navigate("/products")} className="px-6 py-3 border border-foreground font-heading font-bold hover:bg-foreground hover:text-background transition-colors">
-            Continue Shopping
+            {t("Continue Shopping")}
           </button>
         </div>
       </div>
@@ -205,10 +207,10 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <h1 className="font-heading text-3xl font-bold tracking-tighter">Your cart is empty</h1>
-        <p className="text-muted-foreground mt-3">Add some products before checking out.</p>
+        <h1 className="font-heading text-3xl font-bold tracking-tighter">{t("Your cart is empty")}</h1>
+        <p className="text-muted-foreground mt-3">{t("Add some products before checking out.")}</p>
         <button onClick={() => navigate("/products")} className="mt-6 px-6 py-3 bg-foreground text-background font-heading font-bold">
-          Browse Products
+          {t("Browse Products")}
         </button>
       </div>
     );
@@ -216,25 +218,25 @@ export default function Checkout() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-      <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter mb-8">Checkout</h1>
+      <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tighter mb-8">{t("Checkout")}</h1>
       <form onSubmit={placeOrder} className="grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3 space-y-6">
           <div className="border border-border p-5 md:p-6 bg-card">
-            <h2 className="font-heading text-lg font-bold mb-4">Contact Details</h2>
+            <h2 className="font-heading text-lg font-bold mb-4">{t("Contact Details")}</h2>
             <div className="grid sm:grid-cols-2 gap-3">
-              <Field label="Full Name *" value={form.customer_name} onChange={(v) => set("customer_name", v)} required />
-              <Field label="Phone *" value={form.phone} onChange={(v) => set("phone", v)} required type="tel" />
-              <Field label="Email" value={form.email} onChange={(v) => set("email", v)} type="email" full />
+              <Field label={t("Full Name *")} value={form.customer_name} onChange={(v) => set("customer_name", v)} required />
+              <Field label={t("Phone *")} value={form.phone} onChange={(v) => set("phone", v)} required type="tel" />
+              <Field label={t("Email")} value={form.email} onChange={(v) => set("email", v)} type="email" full />
             </div>
           </div>
 
           <div className="border border-border p-5 md:p-6 bg-card">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading text-lg font-bold">Shipping Address</h2>
+              <h2 className="font-heading text-lg font-bold">{t("Shipping Address")}</h2>
               {form.governorate && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-accent/10 text-accent font-heading font-semibold text-xs border border-accent/20">
                   <Truck className="w-3.5 h-3.5" />
-                  Delivery: {formatEGP(shippingFee)}
+                  {t("Delivery:")} {formatEGP(shippingFee)}
                 </span>
               )}
             </div>
@@ -242,11 +244,11 @@ export default function Checkout() {
               <div className="sm:col-span-2">
                 <div className="flex items-center justify-between">
                   <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">
-                    Governorate *
+                    {t("Governorate *")}
                   </label>
                   {form.governorate && (
                     <span className="font-mono-num text-xs font-bold text-accent">
-                      + {formatEGP(shippingFee)} delivery
+                      + {formatEGP(shippingFee)} {t("delivery")}
                     </span>
                   )}
                 </div>
@@ -256,7 +258,7 @@ export default function Checkout() {
                   required
                   className="mt-1.5 w-full h-11 px-3 bg-background border border-border text-sm focus:outline-none focus:border-foreground"
                 >
-                  <option value="">Select governorate</option>
+                  <option value="">{t("Select governorate")}</option>
                   {availableGovernorates.map((g) => {
                     const fee = rateMap[g];
                     return (
@@ -272,7 +274,7 @@ export default function Checkout() {
                     <div className="flex items-center gap-2">
                       <Truck className="w-4 h-4 text-accent shrink-0" />
                       <span>
-                        Delivery fee to <strong className="text-foreground">{form.governorate}</strong>:
+                        {t("Delivery fee to")} <strong className="text-foreground">{form.governorate}</strong>:
                       </span>
                     </div>
                     <span className="font-mono-num font-bold text-accent text-sm">
@@ -282,21 +284,21 @@ export default function Checkout() {
                 ) : (
                   <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                    <span>Select your governorate to view exact delivery fees (from 50 EGP)</span>
+                    <span>{t("Select your governorate to view exact delivery fees (from 50 EGP)")}</span>
                   </p>
                 )}
               </div>
-              <Field label="City / Area *" value={form.city} onChange={(v) => set("city", v)} required />
-              <Field label="Building / Floor / Apt" value={form.building} onChange={(v) => set("building", v)} />
-              <Field label="Detailed Address *" value={form.detailed_address} onChange={(v) => set("detailed_address", v)} required full />
+              <Field label={t("City / Area *")} value={form.city} onChange={(v) => set("city", v)} required />
+              <Field label={t("Building / Floor / Apt")} value={form.building} onChange={(v) => set("building", v)} />
+              <Field label={t("Detailed Address *")} value={form.detailed_address} onChange={(v) => set("detailed_address", v)} required full />
               <div className="sm:col-span-2">
-                <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">Notes</label>
+                <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">{t("Notes")}</label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => set("notes", e.target.value)}
                   rows={2}
                   className="mt-1.5 w-full p-3 bg-background border border-border text-sm focus:outline-none focus:border-foreground resize-none"
-                  placeholder="Landmark, delivery instructions…"
+                  placeholder={t("Landmark, delivery instructions…")}
                 />
               </div>
             </div>
@@ -304,15 +306,15 @@ export default function Checkout() {
 
           <div className="border border-border p-5 md:p-6 bg-card">
             <div className="flex items-center gap-2 mb-2">
-              <h2 className="font-heading text-lg font-bold">Payment</h2>
+              <h2 className="font-heading text-lg font-bold">{t("Payment")}</h2>
             </div>
             <div className="flex items-center gap-3 p-4 bg-accent/10 border border-accent/30">
               <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
                 <Lock className="w-5 h-5 text-accent-foreground" />
               </div>
               <div>
-                <p className="font-heading font-bold">Cash on Delivery</p>
-                <p className="text-sm text-muted-foreground">Pay in cash when your order arrives.</p>
+                <p className="font-heading font-bold">{t("Cash on Delivery")}</p>
+                <p className="text-sm text-muted-foreground">{t("Pay in cash when your order arrives.")}</p>
               </div>
             </div>
           </div>
@@ -321,7 +323,7 @@ export default function Checkout() {
         {/* Summary */}
         <div className="lg:col-span-2">
           <div className="lg:sticky lg:top-24 border border-border bg-card p-5 md:p-6">
-            <h2 className="font-heading text-lg font-bold mb-4">Order Summary</h2>
+            <h2 className="font-heading text-lg font-bold mb-4">{t("Order Summary")}</h2>
             <div className="space-y-3 max-h-64 overflow-y-auto mb-4 pr-1">
               {items.map((item) => (
                 <div key={item.key} className="flex gap-3">
@@ -331,7 +333,7 @@ export default function Checkout() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium line-clamp-1">{item.name}</p>
                     {item.variant && <p className="text-xs text-muted-foreground">{item.variant}</p>}
-                    <p className="text-xs text-muted-foreground">Qty {item.quantity}</p>
+                    <p className="text-xs text-muted-foreground">{t("Qty")} {item.quantity}</p>
                   </div>
                   <span className="font-mono-num text-sm font-bold">{formatEGP(item.price * item.quantity)}</span>
                 </div>
@@ -342,22 +344,22 @@ export default function Checkout() {
               <input
                 value={form.coupon_code}
                 onChange={(e) => set("coupon_code", e.target.value)}
-                placeholder="Coupon code"
+                placeholder={t("Coupon code")}
                 className="flex-1 h-10 px-3 bg-background border border-border text-sm font-mono-num uppercase focus:outline-none focus:border-foreground"
               />
               <button type="button" onClick={applyCoupon} className="px-4 h-10 border border-foreground text-sm font-medium hover:bg-foreground hover:text-background transition-colors">
-                Apply
+                {t("Apply")}
               </button>
             </div>
             {couponError && <p className="text-xs text-destructive -mt-2 mb-2">{couponError}</p>}
             {coupon && <p className="text-xs text-accent -mt-2 mb-2">Coupon applied: {coupon.code}</p>}
 
             <div className="space-y-2 pt-4 border-t border-border text-sm">
-              <Row label="Subtotal" value={formatEGP(subtotal)} />
-              {discount > 0 && <Row label="Discount" value={`- ${formatEGP(discount)}`} accent />}
-              <Row label="Shipping" value={form.governorate ? formatEGP(shippingFee) : "Select governorate"} />
+              <Row label={t("Subtotal")} value={formatEGP(subtotal)} />
+              {discount > 0 && <Row label={t("Discount")} value={`- ${formatEGP(discount)}`} accent />}
+              <Row label={t("Shipping")} value={form.governorate ? formatEGP(shippingFee) : t("Select governorate")} />
               <div className="flex justify-between pt-3 border-t border-border">
-                <span className="font-heading font-bold">Total</span>
+                <span className="font-heading font-bold">{t("Total")}</span>
                 <span className="font-mono-num text-xl font-bold">{formatEGP(total)}</span>
               </div>
             </div>
@@ -367,9 +369,9 @@ export default function Checkout() {
               disabled={placing || !form.governorate}
               className="mt-6 w-full h-12 bg-accent text-accent-foreground font-heading font-bold flex items-center justify-center gap-2 hover:bg-accent/90 disabled:opacity-50 transition-colors"
             >
-              {placing ? <div className="w-5 h-5 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" /> : "Place Order (COD)"}
+              {placing ? <div className="w-5 h-5 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" /> : t("Place Order (COD)")}
             </button>
-            <p className="text-xs text-muted-foreground text-center mt-3">By placing your order you agree to our terms.</p>
+            <p className="text-xs text-muted-foreground text-center mt-3">{t("By placing your order you agree to our terms.")}</p>
           </div>
         </div>
       </form>

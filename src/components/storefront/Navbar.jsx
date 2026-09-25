@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useCart } from "@/lib/cart-context";
 import Logo from "@/components/storefront/Logo";
 
 export default function Navbar({ categories = [] }) {
+  const { t, i18n } = useTranslation();
   const { count, openDrawer } = useCart();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language.startsWith('ar') ? 'en' : 'ar';
+    i18n.changeLanguage(nextLang);
+  };
 
   const submitSearch = (e) => {
     e.preventDefault();
@@ -36,7 +43,7 @@ export default function Navbar({ categories = [] }) {
                 to="/products"
                 className="hover:text-accent transition-colors"
               >
-                All Products
+                {t("All Products")}
               </Link>
               {categories.slice(0, 5).map((c) => (
                 <Link
@@ -44,7 +51,7 @@ export default function Navbar({ categories = [] }) {
                   to={`/products?category=${c.slug}`}
                   className="hover:text-accent transition-colors"
                 >
-                  {c.name}
+                  {i18n.language.startsWith('ar') ? (c.name_ar || t(c.name)) : c.name}
                 </Link>
               ))}
             </nav>
@@ -58,13 +65,21 @@ export default function Navbar({ categories = [] }) {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search accessories…"
+                  placeholder={t("Search accessories…")}
                   className="w-full h-10 pl-9 pr-3 bg-muted border border-border text-sm focus:outline-none focus:border-foreground"
                 />
               </div>
             </form>
 
             <div className="flex items-center gap-1">
+              <button
+                onClick={toggleLanguage}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold hover:bg-muted transition-colors rounded-md border border-border/50 mr-2"
+                aria-label="Toggle language"
+              >
+                <Globe className="w-3.5 h-3.5" />
+                {i18n.language.startsWith('ar') ? 'EN' : 'عربي'}
+              </button>
               <button
                 onClick={openDrawer}
                 className="relative p-2 hover:bg-muted transition-colors"
@@ -100,6 +115,16 @@ export default function Navbar({ categories = [] }) {
                 <X className="w-5 h-5" />
               </button>
             </div>
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <span className="text-sm font-medium">Language</span>
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-muted hover:bg-muted/80 transition-colors rounded-md border border-border/50"
+              >
+                <Globe className="w-3.5 h-3.5" />
+                {i18n.language.startsWith('ar') ? 'English' : 'العربية'}
+              </button>
+            </div>
             <form
               onSubmit={submitSearch}
               className="p-4 border-b border-border"
@@ -109,7 +134,7 @@ export default function Navbar({ categories = [] }) {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search accessories…"
+                  placeholder={t("Search accessories…")}
                   className="w-full h-11 pl-9 pr-3 bg-muted border border-border text-sm focus:outline-none focus:border-foreground"
                 />
               </div>
@@ -120,7 +145,7 @@ export default function Navbar({ categories = [] }) {
                 onClick={() => setMenuOpen(false)}
                 className="py-3 px-3 hover:bg-muted font-medium"
               >
-                All Products
+                {t("All Products")}
               </Link>
               {categories.map((c) => (
                 <Link
@@ -129,7 +154,7 @@ export default function Navbar({ categories = [] }) {
                   onClick={() => setMenuOpen(false)}
                   className="py-3 px-3 hover:bg-muted font-medium"
                 >
-                  {c.name}
+                  {i18n.language.startsWith('ar') ? (c.name_ar || t(c.name)) : c.name}
                 </Link>
               ))}
               <Link
@@ -137,7 +162,7 @@ export default function Navbar({ categories = [] }) {
                 onClick={() => setMenuOpen(false)}
                 className="py-3 px-3 hover:bg-muted font-medium text-muted-foreground"
               >
-                Track Order
+                {t("Track Order")}
               </Link>
             </nav>
           </div>

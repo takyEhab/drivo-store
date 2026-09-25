@@ -14,10 +14,12 @@ import { formatEGP, discountPercent, classNames } from "@/lib/format";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Image } from "@/components/ui/image";
 import SEO from "@/components/SEO";
+import { useTranslation } from "react-i18next";
 
 const RECENTLY_VIEWED_KEY = "drivo_recently_viewed";
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const { add, openDrawer } = useCart();
@@ -105,13 +107,13 @@ export default function ProductDetail() {
     return (
       <div className="text-center py-32 px-4">
         <h1 className="font-heading text-3xl font-bold tracking-tighter">
-          Product not found
+          {t("Product not found")}
         </h1>
         <Link
           to="/products"
           className="mt-6 inline-block text-accent font-medium"
         >
-          ← Back to products
+          &larr; {t("Back to products")}
         </Link>
       </div>
     );
@@ -134,15 +136,15 @@ export default function ProductDetail() {
       {/* Breadcrumb */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
         <Link to="/" className="hover:text-foreground">
-          Home
+          {t("Home")}
         </Link>
-        <ChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-3 h-3 rtl:rotate-180" />
         <Link to="/products" className="hover:text-foreground">
-          Products
+          {t("Products")}
         </Link>
         {product.category_slug && (
           <>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
             <Link
               to={`/products?category=${product.category_slug}`}
               className="hover:text-foreground capitalize"
@@ -151,7 +153,7 @@ export default function ProductDetail() {
             </Link>
           </>
         )}
-        <ChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-3 h-3 rtl:rotate-180" />
         <span className="text-foreground truncate">{product.name}</span>
       </div>
 
@@ -199,12 +201,12 @@ export default function ProductDetail() {
             <div className="flex items-center gap-2 mb-3">
               {discount > 0 && (
                 <span className="font-mono-num text-[11px] font-bold tracking-wider uppercase bg-accent text-accent-foreground px-2 py-1">
-                  -{discount}% OFF
+                  -{discount}% {t("OFF")}
                 </span>
               )}
               {product.bestseller && (
                 <span className="font-mono-num text-[11px] font-bold tracking-wider uppercase bg-foreground text-background px-2 py-1">
-                  Best Seller
+                  {t("Best Seller")}
                 </span>
               )}
             </div>
@@ -248,14 +250,14 @@ export default function ProductDetail() {
             <p className="text-muted-foreground text-sm mt-2">
               {product.availability === "AVAILABLE" ? (
                 <span className="flex items-center gap-1.5 text-accent font-medium">
-                  <Check className="w-4 h-4" /> In stock — ready to ship
+                  <Check className="w-4 h-4" /> {t("In stock — ready to ship")}
                 </span>
               ) : product.availability === "TEMPORARILY_UNAVAILABLE" ? (
                 <span className="text-destructive">
-                  Temporarily unavailable
+                  {t("Temporarily unavailable")}
                 </span>
               ) : (
-                <span className="text-muted-foreground">Discontinued</span>
+                <span className="text-muted-foreground">{t("Discontinued")}</span>
               )}
             </p>
 
@@ -321,11 +323,11 @@ export default function ProductDetail() {
               >
                 {added ? (
                   <>
-                    <Check className="w-5 h-5" /> Added
+                    <Check className="w-5 h-5" /> {t("Added")}
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-5 h-5" /> Add to Cart
+                    <ShoppingBag className="w-5 h-5" /> {t("Add to Cart")}
                   </>
                 )}
               </button>
@@ -335,13 +337,13 @@ export default function ProductDetail() {
               disabled={product.availability !== "AVAILABLE"}
               className="mt-3 w-full h-12 bg-accent text-accent-foreground font-heading font-bold hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              Buy Now
+              {t("Buy Now")}
             </button>
 
             <div className="mt-8 pt-6 border-t border-border space-y-2 text-sm text-muted-foreground">
-              <p>✓ Cash on Delivery available</p>
-              <p>✓ Fast shipping across Egypt</p>
-              <p>✓ Track your order in real time</p>
+              <p>{t("✓ Cash on Delivery available")}</p>
+              <p>{t("✓ Fast shipping across Egypt")}</p>
+              <p>{t("✓ Track your order in real time")}</p>
             </div>
           </div>
         </div>
@@ -350,14 +352,14 @@ export default function ProductDetail() {
         {reviews.length > 0 && (
           <section className="mt-16 md:mt-24">
             <h2 className="font-heading text-2xl md:text-3xl font-bold tracking-tighter mb-6">
-              Customer Reviews
+              {t("Customer Reviews")}
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               {reviews.map((r) => (
                 <div key={r.id} className="border border-border p-5 bg-card">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-heading font-semibold">
-                      {r.customer_name || "Verified Buyer"}
+                      {r.customer_name || t("Verified Buyer")}
                     </span>
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((n) => (
@@ -386,7 +388,7 @@ export default function ProductDetail() {
         {related.length > 0 && (
           <section className="mt-16 md:mt-24">
             <h2 className="font-heading text-2xl md:text-3xl font-bold tracking-tighter mb-6">
-              You May Also Like
+              {t("You May Also Like")}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {related.map((p) => (

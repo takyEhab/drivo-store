@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Logo({ tagline = false, to = "/", className = "" }) {
+  const { t } = useTranslation();
+
   return (
     <Link
       to={to}
@@ -18,7 +21,7 @@ export default function Logo({ tagline = false, to = "/", className = "" }) {
         </span>
         {tagline && (
           <span className="font-mono-num text-[8px] tracking-[0.35em] uppercase text-muted-foreground mt-0.5">
-            Drive Better
+            {t("Drive Better")}
           </span>
         )}
       </span>

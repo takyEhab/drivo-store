@@ -4,9 +4,11 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductCard from "@/components/storefront/ProductCard";
 import SEO from "@/components/SEO";
+import { useTranslation } from "react-i18next";
 
 export default function Products() {
   const { categories } = useOutletContext();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,22 +77,22 @@ export default function Products() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <SEO 
-        title={activeCategory ? `${activeCategory.name} Products` : q ? `Search Results for "${q}"` : "All Products"}
-        description={activeCategory ? `Browse our ${activeCategory.name} collection.` : "Browse all our high-quality car accessories."}
+        title={activeCategory ? `${i18n.language.startsWith('ar') ? (activeCategory.name_ar || t(activeCategory.name)) : activeCategory.name} - ${t("Products")}` : q ? `${t("Search Results for")} "${q}"` : t("All Products")}
+        description={activeCategory ? `${t("Browse our")} ${i18n.language.startsWith('ar') ? (activeCategory.name_ar || t(activeCategory.name)) : activeCategory.name} ${t("collection.")}` : t("Browse all our high-quality car accessories.")}
       />
       <div className="mb-8">
         <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
-          Storefront
+          {t("Storefront")}
         </p>
         <h1 className="font-heading text-3xl md:text-5xl font-bold tracking-tighter">
           {activeCategory
-            ? activeCategory.name
+            ? (i18n.language.startsWith('ar') ? (activeCategory.name_ar || t(activeCategory.name)) : activeCategory.name)
             : q
-              ? `Results for "${q}"`
-              : "All Products"}
+              ? `${t("Results for")} "${q}"`
+              : t("All Products")}
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          {filtered.length} products
+          {filtered.length} {t("products")}
         </p>
       </div>
 
@@ -102,25 +104,25 @@ export default function Products() {
           <div className="md:sticky md:top-24 space-y-6">
             <div>
               <label className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground">
-                Search
+                {t("Search")}
               </label>
               <input
                 value={q}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search…"
+                placeholder={t("Search…")}
                 className="mt-2 w-full h-10 px-3 bg-card border border-border text-sm focus:outline-none focus:border-foreground"
               />
             </div>
             <div>
               <h3 className="font-mono-num text-[11px] tracking-wider uppercase text-muted-foreground mb-3">
-                Categories
+                {t("Categories")}
               </h3>
               <div className="flex flex-col gap-1">
                 <button
                   onClick={() => setCategory("")}
                   className={`text-left py-1.5 text-sm hover:text-accent ${!categorySlug ? "font-bold text-foreground" : "text-muted-foreground"}`}
                 >
-                  All Products
+                  {t("All Products")}
                 </button>
                 {categories.map((c) => (
                   <button
@@ -128,7 +130,7 @@ export default function Products() {
                     onClick={() => setCategory(c.slug)}
                     className={`text-left py-1.5 text-sm hover:text-accent ${categorySlug === c.slug ? "font-bold text-foreground" : "text-muted-foreground"}`}
                   >
-                    {c.name}
+                    {i18n.language.startsWith('ar') ? (c.name_ar || t(c.name)) : c.name}
                   </button>
                 ))}
               </div>
@@ -142,21 +144,21 @@ export default function Products() {
               onClick={() => setShowFilters((s) => !s)}
               className="md:hidden flex items-center gap-2 px-3 py-2 border border-border text-sm"
             >
-              <SlidersHorizontal className="w-4 h-4" /> Filters
+              <SlidersHorizontal className="w-4 h-4" /> {t("Filters")}
             </button>
             <div className="flex items-center gap-2 ml-auto">
               <span className="text-xs text-muted-foreground hidden sm:inline">
-                Sort:
+                {t("Sort:")}
               </span>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
                 className="h-10 px-3 bg-card border border-border text-sm focus:outline-none focus:border-foreground"
               >
-                <option value="newest">Newest</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="bestselling">Best Selling</option>
+                <option value="newest">{t("Newest")}</option>
+                <option value="price-asc">{t("Price: Low to High")}</option>
+                <option value="price-desc">{t("Price: High to Low")}</option>
+                <option value="bestselling">{t("Best Selling")}</option>
               </select>
             </div>
           </div>
@@ -168,10 +170,10 @@ export default function Products() {
           ) : filtered.length === 0 ? (
             <div className="text-center py-24">
               <p className="font-heading text-xl font-semibold">
-                No products found
+                {t("No products found")}
               </p>
               <p className="text-muted-foreground mt-2 text-sm">
-                Try a different search or category.
+                {t("Try a different search or category.")}
               </p>
             </div>
           ) : (
