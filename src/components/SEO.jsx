@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 export default function SEO({ title, description, image, url, type = "website" }) {
   const siteName = "Drivo — Style Your Ride";
   const defaultDescription = "Drivo — Style Your Ride. Affordable, stylish car accessories in Egypt. Cash on Delivery. Order tracking. Interior, exterior and electronics upgrades.";
-  const defaultImage = "/favicon.jpg";
+  const defaultImage = "/favicon.png";
 
   const seoTitle = title ? `${title} | ${siteName}` : siteName;
 
