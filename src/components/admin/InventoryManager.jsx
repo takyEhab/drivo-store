@@ -17,7 +17,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Pencil, Trash2, Star, Plus, Search } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import ProductEditDialog from "./ProductEditDialog";
 
@@ -41,6 +42,7 @@ export default function InventoryManager() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const load = () => {
     setLoading(true);
@@ -57,7 +59,7 @@ export default function InventoryManager() {
     );
     try {
       await base44.entities.Product.update(p.id, { availability });
-    } catch (e) {
+    } catch {
       load();
     }
   };
@@ -67,21 +69,61 @@ export default function InventoryManager() {
     try {
       await base44.entities.Product.delete(p.id);
       setProducts((list) => list.filter((x) => x.id !== p.id));
-    } catch (e) {
+    } catch {
       alert("Could not delete product.");
     }
   };
 
   const onSaved = (saved) => {
-    setProducts((list) => list.map((x) => (x.id === saved.id ? saved : x)));
+    setProducts((list) => {
+      const exists = list.some((x) => x.id === saved.id);
+      if (exists) {
+        return list.map((x) => (x.id === saved.id ? saved : x));
+      }
+      return [saved, ...list];
+    });
     setEditing(null);
   };
+
+  const filteredProducts = products.filter((p) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      p.name?.toLowerCase().includes(q) ||
+      p.category_slug?.toLowerCase().includes(q)
+    );
+  });
 
   if (loading) return <Spinner />;
 
   return (
     <div className="space-y-4">
-      <div className="border border-border bg-card overflow-hidden">
+      {/* Top action toolbar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card p-4 border border-border rounded-xl">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search items by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-10 text-sm"
+          />
+        </div>
+        <div className="flex items-center justify-between sm:justify-end gap-3">
+          <span className="text-xs text-muted-foreground font-mono-num">
+            {filteredProducts.length} {filteredProducts.length === 1 ? "item" : "items"}
+          </span>
+          <Button
+            onClick={() => setEditing({ isNew: true })}
+            className="h-10 font-heading font-semibold shadow-sm"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add Item
+          </Button>
+        </div>
+      </div>
+
+      <div className="border border-border bg-card rounded-xl overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="border-border">
@@ -94,35 +136,45 @@ export default function InventoryManager() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={6}
-                  className="text-center text-muted-foreground py-10"
+                  className="text-center text-muted-foreground py-12"
                 >
-                  No products found.
+                  {searchQuery ? "No matching products found." : "No products found. Click 'Add Item' to create one."}
                 </TableCell>
               </TableRow>
             ) : (
-              products.map((p) => (
+              filteredProducts.map((p) => (
                 <TableRow key={p.id} className="border-border">
                   <TableCell>
-                    <div className="w-12 h-12 bg-muted overflow-hidden">
-                      {p.images?.[0] && (
+                    <div className="w-12 h-12 bg-muted rounded overflow-hidden flex items-center justify-center">
+                      {p.images?.[0] ? (
                         <Image
                           src={p.images[0]}
                           alt={p.name}
                           className="w-full h-full object-cover"
                           fittingType="fill"
                         />
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground select-none">No img</span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium max-w-[220px] truncate">
-                    {p.name}
+                    <p className="truncate font-semibold text-foreground">{p.name}</p>
+                    {p.category_slug && (
+                      <p className="text-[11px] text-muted-foreground truncate">{p.category_slug}</p>
+                    )}
                   </TableCell>
                   <TableCell className="font-mono-num font-bold">
                     {formatEGP(p.price)}
+                    {p.compare_at_price && (
+                      <span className="block text-[11px] font-normal text-muted-foreground line-through">
+                        {formatEGP(p.compare_at_price)}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Select
@@ -139,6 +191,8 @@ export default function InventoryManager() {
                           <SelectItem key={a} value={a}>
                             {a === "TEMPORARILY_UNAVAILABLE"
                               ? "Temp. Unavailable"
+                              : a === "AVAILABLE"
+                              ? "Available (In Stock)"
                               : a}
                           </SelectItem>
                         ))}
@@ -146,17 +200,19 @@ export default function InventoryManager() {
                     </Select>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1.5 items-center">
                       {p.featured && (
-                        <Star className="w-4 h-4 fill-accent text-accent" />
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                          <Star className="w-3 h-3 fill-accent text-accent" /> Featured
+                        </span>
                       )}
                       {p.bestseller && (
-                        <span className="font-mono-num text-[9px] tracking-wider uppercase text-accent">
+                        <span className="font-mono-num text-[9px] tracking-wider uppercase text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded">
                           Best
                         </span>
                       )}
                       {p.new_arrival && (
-                        <span className="font-mono-num text-[9px] tracking-wider uppercase text-muted-foreground">
+                        <span className="font-mono-num text-[9px] tracking-wider uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                           New
                         </span>
                       )}
@@ -174,6 +230,7 @@ export default function InventoryManager() {
                         size="icon"
                         onClick={() => setEditing(p)}
                         aria-label="Edit"
+                        title="Edit product & photos"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -183,6 +240,7 @@ export default function InventoryManager() {
                         onClick={() => remove(p)}
                         aria-label="Delete"
                         className="hover:text-destructive"
+                        title="Delete product"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
