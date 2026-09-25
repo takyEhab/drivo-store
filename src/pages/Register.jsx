@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+  UserPlus,
+  Mail,
+  Lock,
+  Loader2,
+  MailCheck,
+  ExternalLink,
+  RefreshCw,
+  ArrowLeft,
+} from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -21,10 +26,27 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-
+  const [emailSent, setEmailSent] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  const { isAuthenticated } = useAuth();
+  const returnTo = safeReturnTo();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      window.location.href = returnTo;
+    }
+  }, [isAuthenticated, returnTo]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,10 +55,26 @@ export default function Register() {
       setError("Passwords do not match");
       return;
     }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
-      setShowOtp(true);
+      const result = await base44.auth.register({
+        email,
+        password,
+        redirectTo: returnTo,
+      });
+
+      // If email confirmation is disabled in Supabase, user is immediately logged in
+      if (result?.session) {
+        window.location.href = returnTo;
+        return;
+      }
+
+      setEmailSent(true);
+      setResendCooldown(60);
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {
@@ -44,32 +82,21 @@ export default function Register() {
     }
   };
 
-  const handleVerify = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
-      }
-      window.location.href = safeReturnTo();
-    } catch (err) {
-      setError(err.message || "Invalid verification code");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleResend = async () => {
+    if (resendCooldown > 0 || resendLoading) return;
     setError("");
+    setResendLoading(true);
     try {
-      await base44.auth.resendOtp(email);
+      await base44.auth.resendOtp(email, returnTo);
+      setResendCooldown(60);
       toast({
-        title: "Code sent",
-        description: "Check your email for the new code.",
+        title: "Verification link sent",
+        description: `We've resent the verification link to ${email}.`,
       });
     } catch (err) {
-      setError(err.message || "Failed to resend code");
+      setError(err.message || "Failed to resend verification link");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -77,66 +104,147 @@ export default function Register() {
     setError("");
     setGoogleLoading(true);
     try {
-      await base44.auth.loginWithProvider("google", safeReturnTo());
+      await base44.auth.loginWithProvider("google", returnTo);
     } catch (err) {
       setError(err.message || "Failed to initiate Google sign in");
       setGoogleLoading(false);
     }
   };
 
-  if (showOtp) {
+  const getEmailProviderInfo = (userEmail) => {
+    const domain = userEmail?.split("@")[1]?.toLowerCase();
+    if (!domain) return null;
+    if (domain === "gmail.com") {
+      return { name: "Gmail", url: "https://mail.google.com" };
+    }
+    if (["outlook.com", "hotmail.com", "live.com", "msn.com"].includes(domain)) {
+      return { name: "Outlook", url: "https://outlook.live.com" };
+    }
+    if (domain === "yahoo.com" || domain === "ymail.com") {
+      return { name: "Yahoo Mail", url: "https://mail.yahoo.com" };
+    }
+    if (domain === "icloud.com" || domain === "me.com" || domain === "mac.com") {
+      return { name: "iCloud Mail", url: "https://www.icloud.com/mail" };
+    }
+    return null;
+  };
+
+  if (emailSent) {
+    const emailProvider = getEmailProviderInfo(email);
+
     return (
       <AuthLayout
-        icon={Mail}
+        icon={MailCheck}
         title="Verify your email"
-        subtitle={`We sent a code to ${email}`}
+        subtitle="We sent a verification link to your email"
+        footer={
+          <>
+            Already verified?{" "}
+            <Link
+              to={
+                "/login" +
+                (returnTo !== "/"
+                  ? "?returnTo=" + encodeURIComponent(returnTo)
+                  : "")
+              }
+              className="text-primary font-medium hover:underline"
+            >
+              Log in
+            </Link>
+          </>
+        }
       >
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
             {error}
           </div>
         )}
-        <div className="flex justify-center mb-6">
-          <InputOTP
-            maxLength={6}
-            value={otpCode}
-            onChange={setOtpCode}
-            autoFocus
-            autoComplete="one-time-code"
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
+
+        <div className="space-y-5">
+          <div className="p-4 rounded-xl bg-muted/60 border border-border/80 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1 text-left">
+              <p className="text-xs text-muted-foreground font-medium">
+                Verification link sent to
+              </p>
+              <p className="text-sm font-semibold text-foreground truncate">
+                {email}
+              </p>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted-foreground text-center leading-relaxed">
+            Click the link in the email to activate your account and access your Drivo profile.
+          </p>
+
+          <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-xs text-muted-foreground flex items-start gap-2.5 text-left">
+            <span className="text-sm select-none">💡</span>
+            <p className="leading-relaxed">
+              Can't find the email? Check your <strong>Spam</strong> or{" "}
+              <strong>Junk</strong> folder. It usually arrives within a minute.
+            </p>
+          </div>
+
+          <div className="space-y-2.5 pt-1">
+            {emailProvider && (
+              <Button
+                asChild
+                className="w-full h-12 font-medium shadow-sm"
+              >
+                <a
+                  href={emailProvider.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open {emailProvider.name}
+                </a>
+              </Button>
+            )}
+
+            <Button
+              type="button"
+              variant={emailProvider ? "outline" : "default"}
+              className="w-full h-12 font-medium"
+              onClick={handleResend}
+              disabled={resendLoading || resendCooldown > 0}
+            >
+              {resendLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Sending new link...
+                </>
+              ) : resendCooldown > 0 ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 opacity-50" />
+                  Resend link in {resendCooldown}s
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Resend verification link
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setEmailSent(false);
+                setError("");
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors font-medium"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Entered the wrong email? Change it
+            </button>
+          </div>
         </div>
-        <Button
-          className="w-full h-12 font-medium"
-          onClick={handleVerify}
-          disabled={loading || otpCode.length < 6}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Verifying...
-            </>
-          ) : (
-            "Verify"
-          )}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
-          <button
-            onClick={handleResend}
-            className="text-primary font-medium hover:underline"
-          >
-            Resend
-          </button>
-        </p>
       </AuthLayout>
     );
   }
@@ -152,8 +260,8 @@ export default function Register() {
           <Link
             to={
               "/login" +
-              (safeReturnTo() !== "/"
-                ? "?returnTo=" + encodeURIComponent(safeReturnTo())
+              (returnTo !== "/"
+                ? "?returnTo=" + encodeURIComponent(returnTo)
                 : "")
             }
             className="text-primary font-medium hover:underline"

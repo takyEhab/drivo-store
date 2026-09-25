@@ -143,10 +143,17 @@ export const auth = {
     return data;
   },
 
-  async register({ email, password }) {
+  async register({ email, password, redirectTo }) {
+    const targetRedirect = redirectTo
+      ? new URL(redirectTo, window.location.origin).toString()
+      : window.location.origin;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: targetRedirect,
+      },
     });
     if (error) throw error;
     return data;
@@ -162,13 +169,24 @@ export const auth = {
     return data;
   },
 
-  async resendOtp(email) {
+  async resendOtp(email, redirectTo) {
+    const targetRedirect = redirectTo
+      ? new URL(redirectTo, window.location.origin).toString()
+      : window.location.origin;
+
     const { data, error } = await supabase.auth.resend({
       type: "signup",
       email,
+      options: {
+        emailRedirectTo: targetRedirect,
+      },
     });
     if (error) throw error;
     return data;
+  },
+
+  async resendVerificationEmail(email, redirectTo) {
+    return this.resendOtp(email, redirectTo);
   },
 
   async resetPasswordRequest(email) {
