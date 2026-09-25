@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Image } from "@/components/ui/image";
 import Hero from "@/components/storefront/Hero";
+import SEO from "@/components/SEO";
 
 export default function Home() {
   const { categories } = useOutletContext();
@@ -27,6 +28,10 @@ export default function Home() {
 
   return (
     <div>
+      <SEO 
+        title="Home"
+        description="Shop the best car accessories in Egypt. Drivo offers premium styling, affordable prices, and cash on delivery."
+      />
       {/* HERO */}
       <Hero />
 

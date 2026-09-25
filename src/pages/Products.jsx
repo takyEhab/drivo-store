@@ -3,6 +3,7 @@ import { useSearchParams, useOutletContext } from "react-router-dom";
 import { SlidersHorizontal, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductCard from "@/components/storefront/ProductCard";
+import SEO from "@/components/SEO";
 
 export default function Products() {
   const { categories } = useOutletContext();
@@ -73,6 +74,10 @@ export default function Products() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <SEO 
+        title={activeCategory ? `${activeCategory.name} Products` : q ? `Search Results for "${q}"` : "All Products"}
+        description={activeCategory ? `Browse our ${activeCategory.name} collection.` : "Browse all our high-quality car accessories."}
+      />
       <div className="mb-8">
         <p className="font-mono-num text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
           Storefront

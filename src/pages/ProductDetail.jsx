@@ -13,6 +13,7 @@ import { useCart } from "@/lib/cart-context";
 import { formatEGP, discountPercent, classNames } from "@/lib/format";
 import ProductCard from "@/components/storefront/ProductCard";
 import { Image } from "@/components/ui/image";
+import SEO from "@/components/SEO";
 
 const RECENTLY_VIEWED_KEY = "drivo_recently_viewed";
 
@@ -124,6 +125,12 @@ export default function ProductDetail() {
 
   return (
     <div>
+      <SEO 
+        title={product.name}
+        description={product.description?.slice(0, 150) + "..." || `Buy ${product.name} at Drivo.`}
+        image={product.images?.[0]}
+        type="product"
+      />
       {/* Breadcrumb */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
         <Link to="/" className="hover:text-foreground">
