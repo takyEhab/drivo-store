@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
-import { formatEGP, discountPercent, classNames } from "@/lib/format";
+import { formatEGP, discountPercent } from "@/lib/format";
 import { Image } from "@/components/ui/image";
 
-export default function ProductCard({ product, featured = false }) {
+export default function ProductCard({ product }) {
   const { add } = useCart();
   const discount = discountPercent(product.price, product.compare_at_price);
   const unavailable = product.availability !== "AVAILABLE";
@@ -20,17 +20,9 @@ export default function ProductCard({ product, featured = false }) {
   return (
     <Link
       to={`/products/${product.slug}`}
-      className={classNames(
-        "group relative flex flex-col bg-card border border-border overflow-hidden transition-all duration-300 hover:border-foreground/30 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)]",
-        featured ? "md:col-span-2 md:row-span-2" : "",
-      )}
+      className="group relative flex flex-col bg-card border border-border overflow-hidden transition-all duration-300 hover:border-foreground/30 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)]"
     >
-      <div
-        className={classNames(
-          "relative overflow-hidden bg-muted",
-          featured ? "aspect-square md:aspect-[4/3]" : "aspect-square",
-        )}
-      >
+      <div className="relative overflow-hidden bg-muted aspect-square">
         <Image
           src={product.images?.[0]}
           alt={product.name}
@@ -41,6 +33,11 @@ export default function ProductCard({ product, featured = false }) {
           {discount > 0 && (
             <span className="font-mono-num text-[10px] font-bold tracking-wider uppercase bg-accent text-accent-foreground px-2 py-1">
               -{discount}%
+            </span>
+          )}
+          {product.featured && (
+            <span className="font-mono-num text-[10px] font-bold tracking-wider uppercase bg-accent text-accent-foreground px-2 py-1">
+              Featured
             </span>
           )}
           {product.bestseller && (

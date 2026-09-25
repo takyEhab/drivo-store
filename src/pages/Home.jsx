@@ -92,9 +92,9 @@ export default function Home() {
               View all <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-fr">
-            {featured.map((p, i) => (
-              <ProductCard key={p.id} product={p} featured={i === 0} />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {featured.map((p) => (
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </section>
