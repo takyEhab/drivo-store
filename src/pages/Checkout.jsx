@@ -58,7 +58,7 @@ export default function Checkout() {
       if (c.min_order && subtotal < c.min_order) { setCouponError(`Minimum order ${formatEGP(c.min_order)} required`); return; }
       if (c.usage_limit && c.used_count >= c.usage_limit) { setCouponError("Coupon usage limit reached"); return; }
       setCoupon(c);
-    } catch (e) {
+    } catch {
       setCouponError("Could not validate coupon");
     }
   };
@@ -100,9 +100,34 @@ export default function Checkout() {
       if (coupon) {
         await base44.entities.Coupon.update(coupon.id, { used_count: (coupon.used_count || 0) + 1 });
       }
+
+      // Save order to device recent orders for easy tracking
+      try {
+        const key = "drivo_recent_orders";
+        const existing = JSON.parse(localStorage.getItem(key) || "[]");
+        const filtered = Array.isArray(existing)
+          ? existing.filter((o) => o.order_number !== order.order_number)
+          : [];
+        const updated = [
+          {
+            order_number: order.order_number,
+            phone: order.phone,
+            email: order.email,
+            customer_name: order.customer_name,
+            total: order.total,
+            created_date: order.created_date || new Date().toISOString(),
+            status: order.status || "Pending",
+          },
+          ...filtered,
+        ].slice(0, 5);
+        localStorage.setItem(key, JSON.stringify(updated));
+      } catch (e) {
+        console.warn("Could not save to localStorage", e);
+      }
+
       setPlacedOrder(order);
       clear();
-    } catch (err) {
+    } catch {
       alert("Could not place order. Please try again.");
     } finally {
       setPlacing(false);
@@ -121,8 +146,18 @@ export default function Checkout() {
           <p className="font-mono-num text-xs uppercase tracking-wider text-muted-foreground">Your Order Number</p>
           <p className="font-mono-num text-2xl font-bold mt-1">{placedOrder.order_number}</p>
         </div>
+        <p className="text-xs text-muted-foreground mt-3">
+          Saved to this device — you won't lose it if you forget the number.
+        </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-          <button onClick={() => navigate(`/track`)} className="px-6 py-3 bg-foreground text-background font-heading font-bold hover:bg-accent hover:text-accent-foreground transition-colors">
+          <button
+            onClick={() =>
+              navigate(
+                `/track?order=${encodeURIComponent(placedOrder.order_number)}&phone=${encodeURIComponent(placedOrder.phone)}`
+              )
+            }
+            className="px-6 py-3 bg-foreground text-background font-heading font-bold hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
             Track This Order
           </button>
           <button onClick={() => navigate("/products")} className="px-6 py-3 border border-foreground font-heading font-bold hover:bg-foreground hover:text-background transition-colors">
