@@ -43,7 +43,7 @@ export default function Footer({ categories = [] }) {
               </li>
               <li>
                 <a
-                  href="https://wa.me/201000000000"
+                  href="https://wa.me/201097132814"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-accent"
