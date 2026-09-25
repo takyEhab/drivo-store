@@ -132,10 +132,11 @@ export const auth = {
   },
 
   async loginWithProvider(provider, returnTo) {
+    const redirectUrl = new URL(returnTo || "/", window.location.origin).toString();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: returnTo || window.location.origin,
+        redirectTo: redirectUrl,
       },
     });
     if (error) throw error;
