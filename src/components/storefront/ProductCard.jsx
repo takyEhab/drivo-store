@@ -26,9 +26,11 @@ export default function ProductCard({ product }) {
         <Image
           src={product.images?.[0]}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
           fittingType="fill"
         />
+        {/* Uniform bottom vignette for visual consistency */}
+        <div className="absolute inset-0 bg-gradient-to-t from-card/40 via-transparent to-transparent pointer-events-none" />
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {discount > 0 && (
             <span className="font-mono-num text-[10px] font-bold tracking-wider uppercase bg-accent text-accent-foreground px-2 py-1">
