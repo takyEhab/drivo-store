@@ -65,7 +65,7 @@ export default function ProductCard({ product }) {
       </div>
 
       <div className="flex flex-col flex-1 p-4 gap-2">
-        <div className="flex items-start justify-between gap-2">
+        <div className="min-h-[2.5rem]">
           <h3 className="font-heading text-sm font-semibold leading-snug line-clamp-2 group-hover:text-foreground">
             {product.name}
           </h3>
