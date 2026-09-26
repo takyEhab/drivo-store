@@ -125,7 +125,16 @@ const resources = {
       "Search Results for": "Search Results for",
       "Browse our": "Browse our",
       "collection.": "collection.",
-      "Browse all our high-quality car accessories.": "Browse all our high-quality car accessories."
+      "Browse all our high-quality car accessories.": "Browse all our high-quality car accessories.",
+      "Top Rated": "Top Rated",
+      "Across all of Egypt": "Across all of Egypt",
+      "Pay when you receive": "Pay when you receive",
+      "Top-tier accessories": "Top-tier accessories",
+      "Updated weekly": "Updated weekly",
+      "Trending": "Trending",
+      "Featured": "Featured",
+      "Budget": "Budget",
+      "Fresh": "Fresh"
     }
   },
   ar: {
@@ -250,7 +259,16 @@ const resources = {
       "Search Results for": "نتائج البحث لـ",
       "Browse our": "تصفح مجموعة",
       "collection.": ".",
-      "Browse all our high-quality car accessories.": "تصفح جميع إكسسوارات السيارات عالية الجودة لدينا."
+      "Browse all our high-quality car accessories.": "تصفح جميع إكسسوارات السيارات عالية الجودة لدينا.",
+      "Top Rated": "تقييم عالي",
+      "Across all of Egypt": "لكل محافظات مصر",
+      "Pay when you receive": "ادفع لما يوصلك",
+      "Top-tier accessories": "أعلى جودة ممكنة",
+      "Updated weekly": "تجديد أسبوعي",
+      "Trending": "رائج",
+      "Featured": "مميز",
+      "Budget": "اقتصادي",
+      "Fresh": "جديد"
     }
   }
 };
