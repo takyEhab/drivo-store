@@ -27,28 +27,23 @@ export default function Hero() {
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px] animate-float-glow pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-orange-500/8 blur-[100px] animate-float-glow pointer-events-none" style={{ animationDelay: "3s" }} />
 
-      {/* Hero image — cinematic background */}
-      <div
-        className={`absolute inset-y-0 ${
-          isAr ? "left-0" : "right-0"
-        } w-full md:w-[60%] lg:w-[55%]`}
-      >
+      {/* Hero image — cinematic full-bleed background */}
+      <div className="absolute inset-0">
         <Image
           src={HERO_IMG}
           alt={isAr ? "سيارة رياضية سوداء بإضاءة نيون حمراء مميزة" : "Sleek black sports car with red neon lighting"}
-          className="w-full h-full object-cover scale-105"
+          className="w-full h-full object-cover"
           fittingType="fill"
         />
-        {/* Multi-layer gradient overlay */}
+        {/* Gradient overlay — fades image behind text */}
         <div
           className={`absolute inset-0 ${
             isAr
-              ? "bg-gradient-to-l from-background via-background/60 to-transparent"
-              : "bg-gradient-to-r from-background via-background/60 to-transparent"
+              ? "bg-gradient-to-l from-background/95 via-background/70 to-background/20"
+              : "bg-gradient-to-r from-background/95 via-background/70 to-background/20"
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-        <div className="absolute inset-0 bg-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 
       {/* Content */}
