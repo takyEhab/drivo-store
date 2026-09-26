@@ -1,19 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Truck, Headset, Zap, Star } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
 const HERO_IMG = "/hero-car.png";
 
-const TRUST_ITEMS = [
-  { icon: Shield, labelKey: "Premium Quality" },
-  { icon: Truck, labelKey: "Fast Delivery" },
-  { icon: Headset, labelKey: "Dedicated Support" },
-  { icon: Zap, labelKey: "Cash on Delivery" },
-  { icon: Star, labelKey: "Top Rated" },
-];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -138,44 +131,9 @@ export default function Hero() {
               {t("Track Order")}
             </Link>
           </motion.div>
-
-          {/* Stats row */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={4}
-            className="mt-14 flex flex-wrap gap-8 md:gap-12"
-          >
-            {[
-              { value: "500+", label: t("Products") },
-              { value: "50+", label: t("Categories") },
-              { value: "24h", label: t("Fast Delivery") },
-            ].map(({ value, label }) => (
-              <div key={label} className="flex flex-col">
-                <span className="font-heading text-2xl md:text-3xl font-bold text-foreground">{value}</span>
-                <span className="font-mono-num text-[11px] tracking-wider uppercase text-foreground/50 mt-1">{label}</span>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Trust marquee strip */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-foreground/10 bg-background/80 backdrop-blur-sm">
-        <div className="overflow-hidden py-3">
-          <div className="animate-marquee flex items-center gap-12 whitespace-nowrap">
-            {[...TRUST_ITEMS, ...TRUST_ITEMS].map(({ icon: Icon, labelKey }, i) => (
-              <div key={`${labelKey}-${i}`} className="flex items-center gap-2.5 shrink-0">
-                <Icon className="w-4 h-4 text-accent" strokeWidth={1.5} />
-                <span className="text-xs text-foreground/60 font-medium tracking-wide uppercase">
-                  {t(labelKey)}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
   );
 }
+
