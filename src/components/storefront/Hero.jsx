@@ -22,7 +22,7 @@ export default function Hero() {
   const isAr = i18n.language?.startsWith("ar");
 
   return (
-    <section className="relative w-full overflow-hidden bg-background min-h-[90vh] md:min-h-[85vh] flex items-center">
+    <section className="relative w-full overflow-hidden bg-background flex items-center">
       {/* Floating glow blobs */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px] animate-float-glow pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-orange-500/8 blur-[100px] animate-float-glow pointer-events-none" style={{ animationDelay: "3s" }} />
